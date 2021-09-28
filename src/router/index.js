@@ -3,12 +3,11 @@ import VueRouter from "vue-router";
 
 Vue.use(VueRouter);
 
-const routes = [
-  {
+const routes = [{
     path: "/",
     name: "Home",
     redirect: '/recommend'
-  }, 
+  },
   {
     path: '/recommend',
     name: 'recommend',
@@ -16,12 +15,10 @@ const routes = [
       title: '推荐页'
     },
     component: () => import('@/views/Recommend'),
-    children: [
-      {
-        path: ':id',
-        component: () => import('@/views/Disc')
-      }
-    ]
+    children: [{
+      path: ':id',
+      component: () => import('@/views/Disc')
+    }]
   },
   {
     path: '/singer',
@@ -30,12 +27,10 @@ const routes = [
       title: '歌手页'
     },
     component: () => import('@/views/Singer'),
-    children: [
-      {
-        path: ':id',
-        component: () => import('@/views/SingerDetail')
-      }
-    ]
+    children: [{
+      path: ':id',
+      component: () => import('@/views/SingerDetail')
+    }]
   },
   {
     path: '/rank',
@@ -44,12 +39,10 @@ const routes = [
       title: '歌手页'
     },
     component: () => import('@/views/Rank'),
-    children: [
-      {
-        path: ':id',
-        component: () => import('@/views/TopList')
-      }
-    ]
+    children: [{
+      path: ':id',
+      component: () => import('@/views/TopList')
+    }]
   },
   {
     path: '/search',
@@ -57,7 +50,11 @@ const routes = [
     meta: {
       title: '歌手页'
     },
-    component: () => import('@/views/Search')
+    component: () => import('@/views/Search'),
+    children: [{
+      path: ':id',
+      component: () => import('@/views/SingerDetail')
+    }]
   },
 ];
 

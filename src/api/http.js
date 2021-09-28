@@ -86,3 +86,17 @@ export const getRankList = () => {
         type: 'get'
     })
 }
+
+// 获取热词
+export const getHotKey = () => {
+    return request({
+        url: '/search/hot'
+    })
+}
+
+// 建议搜索，返回搜索关键词的歌曲
+export const getSuggestList = (keywords,offset) => {
+    return request({
+        url: `/search?keywords=${keywords}&offset=${offset}`
+    })
+}

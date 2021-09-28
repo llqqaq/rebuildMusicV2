@@ -23,6 +23,8 @@
 <script>
 import BScroll from "@better-scroll/core";
 import PullDown from "@better-scroll/pull-down";
+import Pullup from "@better-scroll/pull-up";
+BScroll.use(Pullup);
 BScroll.use(PullDown);
 const TIME_BOUNCE = 800;
 // const REQUEST_TIME = 1000;
@@ -59,6 +61,11 @@ export default {
       type: Boolean,
       default: false,
     },
+    // 是否需要下拉触底事件
+    pullUpLoad: {
+      type: Boolean,
+      default: false,
+    },
   },
   methods: {
     initScroll() {
@@ -73,12 +80,15 @@ export default {
             pullDownRefresh: this.openPullDown
               ? { threshold: THRESHOLD, stop: STOP }
               : "",
+            pullUpLoad: this.pullUpLoad,
           });
           this.openPullDown &&
             this.Scroll.on("pullingDown", this.pullingDownHandler);
-          this.listenScroll && this.Scroll.on('scroll', pos => {
-            this.$emit('scroll', pos)
-          })
+          this.listenScroll &&
+            this.Scroll.on("scroll", (pos) => {
+              this.$emit("scroll", pos);
+            });
+          this.pullUpLoad && this.Scroll.on("pullingUp", this.pullingUpHandler);
         } else {
           this.Scroll.refresh(); // 重新计算 better-scroll，当 DOM 结构发生变化的时确保滚动效果正常
         }
@@ -105,11 +115,23 @@ export default {
     // refresh
     refresh() {
       this.Scroll && this.Scroll.refresh();
-      console.log('refresh-----------');
+      console.log("refresh-----------");
     },
     // 滚动到对应的元素
     scrollToElement() {
       this.Scroll && this.Scroll.scrollToElement.apply(this.Scroll, arguments);
+    },
+    pullingUpHandler() {
+      this.$emit("pullingUpHandler");
+    },
+    // 滚动到对应的位置
+    scrollTo() {
+      console.log('滚动到顶部');
+      this.Scroll && this.Scroll.scrollTo.apply(this.Scroll, arguments);
+    },
+    // 结束
+    finishPUp() {
+      this.Scroll.finishPullUp();
     },
   },
   mounted() {

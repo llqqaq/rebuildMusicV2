@@ -8,6 +8,7 @@ const getters = {
     getCurrentIndex: state => state.currentIndex,
     getCurrentSong: state => state.playList[state.currentIndex],
     getDesc: state => state.disc,
-    getTopDetail: state => state.topDetail
+    getTopDetail: state => state.topDetail,
+    getKeywordHistory: state => state.keywordHistory
 }
 export default getters

@@ -25,6 +25,12 @@ const mutations = {
     },
     setTopDetail(state, topDetail) {
         state.topDetail = topDetail
+    },
+    setKeywordHistory(state, keywordList) {
+        state.keywordHistory = [...keywordList]
+    },
+    deleteKeyword(state, index) {
+        state.keywordHistory.splice(index, 1)
     }
 }
 export default mutations

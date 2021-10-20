@@ -40,7 +40,8 @@
 <script>
 import { getSuggestList } from "@/api/http";
 import BScroll from "@/components/Scroll";
-import { mapMutations } from 'vuex'
+import { mapMutations, mapActions } from "vuex";
+
 export default {
   name: "suggest",
   data() {
@@ -89,8 +90,14 @@ export default {
         this.getSuggestList();
       }
     },
-    select(item) {
-     console.log(item);
+    select(song) {
+      this.insertSong(song);
+      this.saveKeyword(song);
+    },
+    handlePlayList(playList) {
+      const bottom = playList.length > 0 ? "60px" : 0;
+      this.$refs.bscroll.$el.style.bottom = bottom;
+      this.$refs.bscroll.refresh();
     },
     ...mapMutations(["setSinger"]),
     // 拼接歌手
@@ -103,6 +110,7 @@ export default {
       str = str.slice(0, str.length - 1);
       return str;
     },
+    ...mapActions(["insertSong", "saveKeyword"]),
   },
   watch: {
     query(newVal) {
@@ -128,9 +136,14 @@ export default {
 .suggest {
   height: 100%;
   width: 100%;
+  // position: absolute;
+  // top: 0;
+  // left: 0;
+  // padding: 20px 20px 10px ;
   background-color: #222;
   padding-top: 20px;
   overflow: hidden;
+  box-sizing: border-box;
   .suggest-ul {
     //   margin-top: 20px;
     .suggest-li {

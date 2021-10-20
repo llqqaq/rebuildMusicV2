@@ -9,44 +9,67 @@
       <h1>热门搜索</h1>
       <div class="hot-key">
         <ul>
-          <li v-for="key in hotKey" :key="key.first" @click="chooseKey(key.first)">
+          <li
+            v-for="key in hotKey"
+            :key="key.first"
+            @click="chooseKey(key.first)"
+          >
             {{ key.first }}
           </li>
         </ul>
       </div>
+      <!-- 搜索历史 -->
+      <div class="history-wrapper" v-show="getKeywordHistory.length > 0">
+        <div class="title-wrapper">
+          <span class="text">搜索历史</span>
+          <span class="iconfont icon-trash" @click="clear"></span>
+        </div>
+        <search-history
+          :search="getKeywordHistory"
+          @select="chooseKey"
+          @deleteKey="deleteKeyword"
+        ></search-history>
+      </div>
     </div>
-     <!-- 搜索列表 -->
-    <div class="suggest-wrapper" v-show="value">
+    <!-- 搜索列表 -->
+    <div class="suggest-wrapper" ref="suggestWrapper" v-show="value">
       <suggest :query="value"></suggest>
     </div>
+    <comfirm ref="confirm" @confirm="clearKeyword"></comfirm>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
 import SearchBox from "@/components/SearchBox";
-import Suggest from '@/components/Suggest'
+import Suggest from "@/components/Suggest";
+import SearchHistory from "@/components/SearchHistory";
 import { getHotKey } from "@/api/http";
+import { mapGetters, mapActions } from "vuex";
+import Comfirm from "@/components/Comfirm";
 export default {
-  components: {
-    SearchBox,
-    Suggest
-  },
-  props: {},
   data() {
     return {
       hotKey: [],
-      value: ''
+      value: "",
     };
   },
   watch: {},
-  computed: {},
+  computed: {
+    ...mapGetters(["getKeywordHistory"]),
+  },
+  components: {
+    SearchBox,
+    Suggest,
+    SearchHistory,
+    Comfirm,
+  },
   methods: {
     query(val) {
-      this.value = val
+      this.value = val;
     },
     chooseKey(val) {
-      this.$refs.searchBox.setQuery(val) 
+      this.$refs.searchBox.setQuery(val);
     },
     getHotKey() {
       getHotKey().then((res) => {
@@ -56,9 +79,17 @@ export default {
         }
       });
     },
+    clear() {
+      this.$refs.confirm.show();
+    },
+    // 获取缓存中的history
+    getHistory() {},
+    ...mapActions(["deleteKeyword", "clearKeyword"]),
   },
   created() {
-    this.getHotKey()
+    this.getHotKey();
+    this.getHistory();
+    console.log(this.getKeywordHistory);
   },
   mounted() {},
 };

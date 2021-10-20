@@ -1,25 +1,27 @@
 <template>
   <div class="search-box">
     <span class="iconfont icon-jiansuo"></span>
-    <input 
-      type="text" 
-      v-model.trim="query" 
-      ref="input" 
-      class="search-input" 
+    <input
+      type="text"
+      v-model.trim="query"
+      ref="input"
+      class="search-input"
       :placeholder="placeholder"
+      @blur="blur"
     />
     <span class="iconfont icon-qingchu" v-show="query" @click="clear"></span>
   </div>
 </template>
 
 <script>
+// import { debounce } from "@/common/js/util";
 export default {
   components: {},
   props: {
-     placeholder: {
+    placeholder: {
       type: String,
-      default: "搜索歌曲、歌手"
-    }
+      default: "搜索歌曲、歌手",
+    },
   },
   data() {
     return {
@@ -33,13 +35,24 @@ export default {
       this.query = "";
     },
     setQuery(val) {
-      this.query = val
+      this.query = val;
+    },
+    blur() {
+      console.log('失去焦点');
+      this.$refs.input.blur()
     }
   },
   created() {
-    this.$watch('query', (newQuery) => {
-      this.$emit('query', newQuery)
-    })
+    // this.$watch("query", debounce(newVal => {
+    //   this.$emit("query", newVal);
+    // }, 200));
+    let timer
+    this.$watch("query", function(newVal) {
+      if(timer) clearTimeout(timer)
+      timer = setTimeout(() => {
+        this.$emit("query", newVal);
+      }, 200)
+    });
   },
   mounted() {},
 };

@@ -77,9 +77,8 @@
           </div>
           <div class="choose">
             <span
-              class="iconfont"
-              :class="getIcon"
-              @click.stop="toggleMode"
+              class="iconfont icon-shunxubofang"
+              @click.stop="showPlaylist"
             ></span>
           </div>
         </div>
@@ -94,6 +93,7 @@
       @timeupdate="timeupdate"
       @ended='end'
     ></audio>
+    <playlist ref="playlist"></playlist>
   </div>
 </template>
 
@@ -102,6 +102,7 @@ import { mapGetters, mapMutations } from "vuex";
 import { playMode } from "@/common/js/config";
 import ProgressBar from "@/components/ProgressBar";
 import { getLyrics } from '@/api/http'
+import Playlist from '@/components/PlayList'
 export default {
   name: "player",
   data() {
@@ -232,6 +233,9 @@ export default {
         console.log('歌词', res);
       })
     },  
+    showPlaylist() {
+      this.$refs.playlist.showModel()
+    },
     _findIndex(list) {
       let index = list.findIndex((item) => {
         return item.name === this.getCurrentSong.name;
@@ -263,6 +267,7 @@ export default {
   },
   components: {
     ProgressBar,
+    Playlist
   },
   watch: {
     getCurrentSong(newVal, oldVal) {

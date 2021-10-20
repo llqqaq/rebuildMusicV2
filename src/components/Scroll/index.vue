@@ -138,8 +138,9 @@ export default {
     this.initScroll();
   },
   watch: {
-    data() {
+    data(newval) {
       this.$nextTick(() => {
+        console.log("scroll-------------", newval);
         this.initScroll();
       });
     },

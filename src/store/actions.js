@@ -76,6 +76,27 @@ const actions = {
     },
     clearKeyword({ commit } ) {
         commit('setKeywordHistory', clearHistory('keyword'))
+    },
+    deleteSong({ commit, state }, song ) {
+        let playList = [...state.playList]
+        let sequenceList = [...state.sequenceList]
+        let currentIndex = state.currentIndex
+        let pIndex = findSongIndex(playList, song)
+        playList.splice(pIndex, 1)
+        let sIndex = findSongIndex(sequenceList, song)
+        sequenceList.splice(sIndex, 1)
+
+        // 这里为什么要判断 currentIndex == playList.length
+        if(currentIndex > pIndex || currentIndex == playList.length) {
+            currentIndex--
+        }
+        commit('setPlayList', playList)
+        commit('setSequenceList', sequenceList)
+        commit('setCurrentIndex', currentIndex)
+        console.log('currentIndex', currentIndex);
+        if(!playList.length) {
+            commit('setPlaying', true)
+        }
     }
 }
 

@@ -15,15 +15,23 @@
       <div class="list-content">
         <b-scroll ref="scroll" :data="getSequenceList" class="content-ul">
           <li
-            ref="li"
             class="content-li"
             v-for="(item, index) in getSequenceList"
             :key="index"
+            @click="selectItem(item, index)"
+            ref="listView"
           >
-            <span class="current iconfont"></span>
+            <span
+              class="current iconfont"
+              :id="item.id"
+              :class="getCurrentIndex(item)"
+            ></span>
             <span class="name">{{ item.name }}</span>
             <span class="like iconfont icon-like"></span>
-            <span class="del iconfont icon-chushaixuanxiang"></span>
+            <span
+              class="del iconfont icon-chushaixuanxiang"
+              @click.stop="deleteSong(item)"
+            ></span>
           </li>
         </b-scroll>
       </div>
@@ -39,7 +47,8 @@
 </template>
 <script>
 import BScroll from "@/components/Scroll";
-import { mapGetters } from "vuex";
+import { playMode } from "@/common/js/config";
+import { mapGetters, mapMutations, mapActions } from "vuex";
 export default {
   name: "playlist",
   data() {
@@ -49,7 +58,12 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getSequenceList"]),
+    ...mapGetters([
+      "getSequenceList",
+      "getCurrentSong",
+      "getMode",
+      "getPlayList",
+    ]),
   },
   components: {
     BScroll,
@@ -57,11 +71,52 @@ export default {
   methods: {
     showModel() {
       this.show = true;
+      this.$nextTick(() => {
+        this.$refs.scroll.refresh();
+        this.scrollToCurrentSong(this.getCurrentSong);
+      });
     },
     hideModel() {
       this.show = false;
     },
-  }
+    // 判断是否当前歌曲
+    getCurrentIndex(item) {
+      if (this.getCurrentSong.id === item.id) {
+        return "icon-bofang";
+      }
+      return "";
+    },
+    selectItem(item, index) {
+      if (this.getMode == playMode.random) {
+        index = this.getPlayList.findIndex((song) => song.id === item.id);
+      }
+      this.setCurrentIndex(index);
+      this.setPlaying(true);
+    },
+    // 滚动到对应歌曲
+    scrollToCurrentSong(current) {
+      let index = this.getSequenceList.findIndex((song) => {
+        return song.id == current.id;
+      });
+      console.log(this.$refs.listView[index]);
+      console.log(this.$refs.scroll.scrollToElement);
+      setTimeout(() => {
+        this.$refs.scroll.scrollToElement(this.$refs.listView[index], 300);
+      }, 20);
+    },
+    deleteSong(song) {
+      this.deleteSong(song)
+    },
+    ...mapMutations(["setCurrentIndex", "setPlaying"]),
+    ...mapActions(['deleteSong'])
+  },
+  watch: {
+    getCurrentSong(newVal, oldVal) {
+      console.log(111111);
+      if (!this.showModel || newVal.id === oldVal) return;
+      this.scrollToCurrentSong(newVal);
+    },
+  },
 };
 </script>
 <style lang="less" scoped>
@@ -105,11 +160,9 @@ export default {
     }
   }
   .list-content {
-    max-height: 240px;
-    overflow: hidden;
-    // height: 240px;
     width: 100%;
     .content-ul {
+      max-height: 240px;
       .content-li {
         //   直接用transition只能包裹简单元素，这个要用transition-groud，看一下样式应该放在哪里
         &.list-enter-active,

@@ -64,6 +64,7 @@ const actions = {
         }
         commit('setPlayList', playList)
         commit('setSequenceList', sequenceList)
+        console.log('currentIndex', currentIndex);
         commit('setCurrentIndex', currentIndex)
         commit('setFullScreen', true)
         commit('setPlaying', true)
@@ -96,7 +97,16 @@ const actions = {
         console.log('currentIndex', currentIndex);
         if(!playList.length) {
             commit('setPlaying', true)
+        }else {
+            commit('setPlaying', true)
         }
+    },
+    deleteAllSongs({ commit }) {
+        commit('setPlayList', [])
+        commit('setSequenceList', [])
+        commit('setCurrentIndex', -1)
+        commit('setFullScreen', false)
+        commit('setPlaying', false)
     }
 }
 

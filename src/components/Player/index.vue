@@ -271,6 +271,7 @@ export default {
   },
   watch: {
     getCurrentSong(newVal, oldVal) {
+      if(!newVal) return
       if (oldVal && newVal.name === oldVal.name) return;
       let index = Math.floor(Math.random() * 10);
       while (index === this.randomIndex) {

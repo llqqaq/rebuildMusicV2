@@ -8,31 +8,35 @@
         <span class="text">文本</span>
         <span
           class="del iconfont icon-trash"
-          @click.stop="deleteAllSongs"
+          @click.stop="deleteAllSong"
         ></span>
       </div>
       <!-- 这里直接将div改为scroll -->
       <div class="list-content">
         <b-scroll ref="scroll" :data="getSequenceList" class="content-ul">
-          <li
-            class="content-li"
-            v-for="(item, index) in getSequenceList"
-            :key="index"
-            @click="selectItem(item, index)"
-            ref="listView"
-          >
-            <span
-              class="current iconfont"
-              :id="item.id"
-              :class="getCurrentIndex(item)"
-            ></span>
-            <span class="name">{{ item.name }}</span>
-            <span class="like iconfont icon-like"></span>
-            <span
-              class="del iconfont icon-chushaixuanxiang"
-              @click.stop="deleteSong(item)"
-            ></span>
-          </li>
+          <!-- transition-group 专门为ul这类标签的动画 -->
+          <!-- 下面的:key 不能用index -->
+          <transition-group name="list" tag="ul">
+            <li
+              class="content-li"
+              v-for="(item, index) in getSequenceList"
+              :key="item.id" 
+              @click="selectItem(item, index)"
+              ref="listView"
+            >
+              <span
+                class="current iconfont"
+                :id="item.id"
+                :class="getCurrentIndex(item)"
+              ></span>
+              <span class="name">{{ item.name }}</span>
+              <span class="like iconfont icon-like"></span>
+              <span
+                class="del iconfont icon-chushaixuanxiang"
+                @click.stop="deleteSong(item)"
+              ></span>
+            </li>
+          </transition-group>
         </b-scroll>
       </div>
       <div class="list-operate">
@@ -43,12 +47,18 @@
       </div>
       <div class="close" @click="hideModel">关闭</div>
     </div>
+    <comfirm 
+      ref="comfirm" 
+      title="确定清空列表？" 
+      @confirm='confirm'
+      ></comfirm>
   </div>
 </template>
 <script>
 import BScroll from "@/components/Scroll";
 import { playMode } from "@/common/js/config";
 import { mapGetters, mapMutations, mapActions } from "vuex";
+import Comfirm from '@/components/Comfirm'
 export default {
   name: "playlist",
   data() {
@@ -67,6 +77,7 @@ export default {
   },
   components: {
     BScroll,
+    Comfirm
   },
   methods: {
     showModel() {
@@ -105,15 +116,20 @@ export default {
       }, 20);
     },
     deleteSong(song) {
-      this.deleteSong(song)
+      this.deleteSong(song);
+    },
+    deleteAllSong() {
+      this.$refs.comfirm.show()
+    },
+    confirm() {
+      this.deleteAllSongs()
     },
     ...mapMutations(["setCurrentIndex", "setPlaying"]),
-    ...mapActions(['deleteSong'])
+    ...mapActions(["deleteSong", "deleteAllSongs"]),
   },
   watch: {
     getCurrentSong(newVal, oldVal) {
-      console.log(111111);
-      if (!this.showModel || newVal.id === oldVal) return;
+      if (!this.show || newVal.id === oldVal) return;
       this.scrollToCurrentSong(newVal);
     },
   },
@@ -165,11 +181,11 @@ export default {
       max-height: 240px;
       .content-li {
         //   直接用transition只能包裹简单元素，这个要用transition-groud，看一下样式应该放在哪里
-        &.list-enter-active,
+        // &.list-enter-active,
         &.list-leave-active {
-          transition: all 0.3s linear;
+          transition: all 0.2s linear;
         }
-        &.list-enter,
+        // &.list-enter,
         &.list-leave-to {
           height: 0;
         }
